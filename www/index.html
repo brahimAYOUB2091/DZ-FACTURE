@@ -34,7 +34,17 @@ td:last-child{text-align:end;white-space:nowrap}
 tr.sum td{font-weight:700;border-bottom:1px solid var(--line)}
 .total{background:var(--hero);color:var(--herotext);border-radius:14px;padding:16px;text-align:center}
 .total b{display:block;font-size:1.8rem;margin-top:4px;direction:ltr}
+.water{border-top:4px solid #1597c8}
+.tabs{display:flex;gap:6px;margin:0 0 14px}
+.tabs button{flex:1;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--text);font-size:.95rem;cursor:pointer}
+.tabs button.on{background:var(--blue);color:var(--bg);font-weight:700;border-color:var(--blue)}
+.warn{background:var(--card);border:1px solid var(--orange);border-radius:10px;padding:10px;font-size:.9rem}
 .hidden{display:none}
+select{width:100%;padding:12px;font-size:1rem;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);margin-top:10px}
+.big{display:flex;flex-direction:column;align-items:center;gap:4px;width:100%;padding:22px 16px;margin-bottom:14px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:16px;cursor:pointer;font-size:1.1rem}
+.big .ic{font-size:2.2rem}.big small{color:var(--muted);font-size:.85rem}
+.big.elec{border-top:4px solid var(--orange)}.big.water{border-top:4px solid #1597c8}
+.back{background:none;border:0;color:var(--blue);font-size:.95rem;cursor:pointer;padding:4px 0 8px}
 .note{color:var(--muted);font-size:.8rem;margin-top:12px}
 </style>
 </head>
@@ -47,45 +57,78 @@ tr.sum td{font-weight:700;border-bottom:1px solid var(--line)}
       <button class="theme" id="theme" type="button"></button>
     </div>
   </div>
-  <p class="sub" data-i="sub"></p>
+  <p class="sub" id="subline" data-i="homeSub"></p>
 
-  <!-- لإضافة الماء لاحقاً: أضف بطاقة جديدة هنا + دالة حساب + مفاتيح الترجمة في T -->
+  <button class="back hidden" id="back" type="button" data-i="back"></button>
+  <section id="home">
+    <button class="big elec" type="button" data-go="eg"><span class="ic">⚡🔥</span><b data-i="homeEG"></b><small data-i="homeEGs"></small></button>
+    <button class="big water" type="button" data-go="w"><span class="ic">💧</span><b data-i="homeW"></b><small data-i="homeWs"></small></button>
+  </section>
+
+  <section id="p-eg" class="hidden">
   <div class="card elec"><h2 data-i="elec"></h2><div class="row">
     <div><label for="eo" data-i="old"></label><input id="eo" type="number" inputmode="decimal" min="0" step="any"></div>
     <div><label for="en" data-i="new"></label><input id="en" type="number" inputmode="decimal" min="0" step="any"></div>
-  </div></div>
+  </div>
+    <label for="pmd" style="margin-top:10px" data-i="pmd"></label>
+    <select id="pmd"><option value="4">4 kW</option><option value="6" selected>6 kW</option><option value="12">12 kW</option><option value="20">20 kW (3φ)</option><option value="40">40 kW (3φ)</option></select>
+  </div>
   <div class="card gas"><h2 data-i="gas"></h2><div class="row">
     <div><label for="go" data-i="old"></label><input id="go" type="number" inputmode="decimal" min="0" step="any"></div>
     <div><label for="gn" data-i="new"></label><input id="gn" type="number" inputmode="decimal" min="0" step="any"></div>
   </div></div>
 
+  <p class="note" data-i="optHint"></p>
   <button class="go" id="calc" type="button" data-i="calc"></button>
   <p class="err" id="err" role="alert"></p>
 
   <div id="out" class="hidden">
-    <div class="card elec"><h2 data-i="elecD"></h2><table id="etab"></table></div>
-    <div class="card gas"><h2 data-i="gasD"></h2><table id="gtab"></table></div>
+    <div class="card elec" id="ecard"><h2 data-i="elecD"></h2><table id="etab"></table></div>
+    <div class="card gas" id="gcard"><h2 data-i="gasD"></h2><table id="gtab"></table></div>
     <div class="card"><h2 data-i="fees"></h2><table id="ftab"></table></div>
     <div class="total"><span data-i="total"></span><b id="tot"></b></div>
     <p class="note" data-i="note"></p>
   </div>
+  </section>
+
+  <section id="p-w" class="hidden">
+    <div class="card water"><h2 data-i="water"></h2>
+      <label for="prov" data-i="prov"></label>
+      <select id="prov" style="margin:0 0 10px"><option value="ade" data-i="pADE"></option><option value="seaal" data-i="pSEAAL"></option></select>
+      <div class="row">
+        <div><label for="wo" data-i="old"></label><input id="wo" type="number" inputmode="decimal" min="0" step="any"></div>
+        <div><label for="wn" data-i="new"></label><input id="wn" type="number" inputmode="decimal" min="0" step="any"></div>
+      </div>
+    </div>
+    <button class="go" id="wcalc" type="button" data-i="calc"></button>
+    <p class="note warn hidden" id="wsealnote" data-i="seaalNote"></p>
+    <p class="err" id="werr" role="alert"></p>
+    <div id="wout" class="hidden">
+      <div class="card water"><h2 data-i="waterD"></h2><table id="wtab"></table></div>
+      <div class="card water"><h2 data-i="sanD"></h2><table id="stab"></table></div>
+      <div class="card"><h2 data-i="fees"></h2><table id="wftab"></table></div>
+      <div class="total"><span data-i="total"></span><b id="wtot"></b></div>
+      <p class="note warn" id="wwarn"></p>
+      <p class="note" data-i="note"></p>
+    </div>
+  </section>
 </div>
 
 <script src="tariffs.js"></script>
 <script src="calc.js"></script>
 <script>
 var T={
-ar:{sub:"أدخل البيان القديم والجديد للعدادين لحساب الفاتورة.",elec:"الكهرباء",gas:"الغاز",old:"البيان القديم",new:"البيان الجديد",calc:"احسب الفاتورة",
+ar:{homeSub:"اختر نوع الفاتورة التي تريد حسابها.",homeEG:"فاتورة الكهرباء والغاز",homeEGs:"سونلغاز — الكهرباء أو الغاز أو الاثنان معاً",homeW:"فاتورة الماء",homeWs:"الجزائرية للمياه (ADE) أو سيال (SEAAL)",back:"→ الرئيسية",pmd:"القدرة المتاحة (PMD)",optHint:"يمكنك إدخال الكهرباء وحدها أو الغاز وحده أو الاثنين معاً، واترك الحقلين الآخرين فارغين.",prov:"مؤسسة توزيع الماء",pADE:"الجزائرية للمياه (ADE)",pSEAAL:"سيال — الجزائر وتيبازة (غير متوفرة بعد)",seaalNote:"أسعار فواتير سيال غير مدرجة بعد، لأنها لم تُتحقق من فاتورة فعلية. أرسل فاتورة سيال على GitHub لإضافتها.",westim:"تنبيه: سعر الشطرين 3 و4 (فوق 55 م³) مقدَّر من المعاملات الرسمية (×5.5 و×6.5) ولم تؤكده فاتورة بعد.",subW:"أدخل بيان عداد الماء القديم والجديد لحساب الفاتورة.",errNeed:"أدخل بيانات الكهرباء أو الغاز على الأقل.",errPair:"أكمل البيان القديم والجديد لنفس العداد.",errFillW:"الرجاء إدخال البيانين.",tabEG:"كهرباء وغاز",tabW:"الماء",water:"الماء",waterD:"تفاصيل الماء",sanD:"التطهير",wfix:"الاتاوة الثابتة للاشتراك",wsub:"المجموع الجزئي",wht:"المجموع الجزئي دون رسوم",wmg:"اتاوة التسيير",wql:"اتاوة نوعية الماء 4%",wec:"اتاوة اقتصاد الماء 4%",wtx:"المجموع الجزئي للاتاوات والرسوم",wbill:"مبلغ الفاتورة",wmiss:"أسعار الشطرين 3 و4 (أكثر من 55 م³) غير متوفرة بعد. أرسل فاتورة بهذا الاستهلاك عبر GitHub لإضافتها.",sub:"أدخل البيان القديم والجديد للكهرباء أو للغاز أو لهما معاً.",elec:"الكهرباء",gas:"الغاز",old:"البيان القديم",new:"البيان الجديد",calc:"احسب الفاتورة",
  errFill:"الرجاء إدخال الحقول الأربعة.",errOrder:"البيان الجديد يجب أن يكون أكبر من أو يساوي القديم.",elecD:"تفاصيل الكهرباء",gasD:"تفاصيل الغاز",fees:"الرسوم والضرائب",
  use:"الاستهلاك",diff:"الفرق في العداد",tr:"الشطر",ht0:"المبلغ دون رسوم",sub_:"الاشتراك (الاتاوات الثابتة)",ht:"المبلغ دون رسوم (HT)",t9:"الرسم على القيمة المضافة 9%",t19:"الرسم على القيمة المضافة 19%",
  tt:"مجموع TVA",fix:"المستحقات الثابتة على الاستهلاك",hab:"رسم على السكن",net:"الصافي للدفع (شامل الرسوم)",stamp:"الطابع (دفع نقدا)",total:"المبلغ الإجمالي للدفع نقداً (شامل الطابع):",
  note:"الحساب تقريبي وقد يختلف عن الفاتورة الرسمية بسنتيم واحد بسبب التقريب.",da:"دج",m3:"م³",th:"Th",auto:"تلقائي",light:"فاتح",dark:"داكن"},
-en:{sub:"Enter the old and new readings of both meters to compute the bill.",elec:"Electricity",gas:"Gas",old:"Old reading",new:"New reading",calc:"Calculate bill",
+en:{homeSub:"Choose which bill you want to calculate.",homeEG:"Electricity & gas bill",homeEGs:"Sonelgaz — electricity, gas or both",homeW:"Water bill",homeWs:"Algérienne des Eaux (ADE) or SEAAL",back:"← Home",pmd:"Subscribed power (PMD)",optHint:"You can enter electricity only, gas only, or both. Leave the other fields empty.",prov:"Water provider",pADE:"Algérienne des Eaux (ADE)",pSEAAL:"SEAAL — Algiers & Tipaza (not available yet)",seaalNote:"SEAAL bill prices are not included yet because they have not been checked against a real bill. Please submit a SEAAL bill on GitHub.",westim:"Warning: tier 3 and 4 prices (above 55 m³) are estimated from the official coefficients (×5.5 and ×6.5) and not yet confirmed by a bill.",subW:"Enter the old and new water meter readings to compute the bill.",errNeed:"Enter electricity or gas readings (at least one).",errPair:"Fill in both old and new readings of the same meter.",errFillW:"Please enter both readings.",tabEG:"Electricity & Gas",tabW:"Water",water:"Water",waterD:"Water details",sanD:"Sanitation",wfix:"Fixed subscription fee",wsub:"Subtotal",wht:"Subtotal before tax",wmg:"Management fee",wql:"Water quality fee 4%",wec:"Water saving fee 4%",wtx:"Subtotal taxes and fees",wbill:"Bill amount",wmiss:"Tier 3 and 4 prices (above 55 m³) are not available yet. Please submit a bill with that consumption on GitHub.",sub:"Enter the old and new readings for electricity, gas, or both.",elec:"Electricity",gas:"Gas",old:"Old reading",new:"New reading",calc:"Calculate bill",
  errFill:"Please fill in all four fields.",errOrder:"The new reading must be greater than or equal to the old one.",elecD:"Electricity details",gasD:"Gas details",fees:"Fees and taxes",
  use:"Consumption",diff:"Meter difference",tr:"Tier",ht0:"Amount before tax",sub_:"Subscription (fixed charges)",ht:"Amount before tax (HT)",t9:"VAT 9%",t19:"VAT 19%",
  tt:"Total VAT",fix:"Fixed consumption charge",hab:"Housing tax",net:"Net payable (all taxes included)",stamp:"Stamp duty (cash)",total:"Total to pay in cash (stamp included):",
  note:"Approximate: may differ from the official bill by one centime due to rounding.",da:"DA",m3:"m³",th:"Th",auto:"Auto",light:"Light",dark:"Dark"},
-fr:{sub:"Saisissez l'ancien et le nouvel index des deux compteurs pour calculer la facture.",elec:"Électricité",gas:"Gaz",old:"Ancien index",new:"Nouvel index",calc:"Calculer la facture",
+fr:{homeSub:"Choisissez la facture à calculer.",homeEG:"Facture électricité et gaz",homeEGs:"Sonelgaz — électricité, gaz ou les deux",homeW:"Facture d'eau",homeWs:"Algérienne des Eaux (ADE) ou SEAAL",back:"← Accueil",pmd:"Puissance mise à disposition (PMD)",optHint:"Vous pouvez saisir l'électricité seule, le gaz seul ou les deux. Laissez les autres champs vides.",prov:"Opérateur de l'eau",pADE:"Algérienne des Eaux (ADE)",pSEAAL:"SEAAL — Alger et Tipaza (pas encore disponible)",seaalNote:"Les tarifs des factures SEAAL ne sont pas encore inclus car non vérifiés sur une vraie facture. Envoyez une facture SEAAL sur GitHub.",westim:"Attention : les prix des tranches 3 et 4 (au-delà de 55 m³) sont estimés d'après les coefficients officiels (×5,5 et ×6,5) et pas encore confirmés par une facture.",subW:"Saisissez l'ancien et le nouvel index du compteur d'eau.",errNeed:"Saisissez l'électricité ou le gaz (au moins un).",errPair:"Renseignez l'ancien et le nouvel index du même compteur.",errFillW:"Veuillez saisir les deux index.",tabEG:"Électricité & Gaz",tabW:"Eau",water:"Eau",waterD:"Détail eau",sanD:"Assainissement",wfix:"Redevance fixe d'abonnement",wsub:"Sous-total",wht:"Sous-total HT",wmg:"Redevance de gestion",wql:"Redevance qualité eau 4%",wec:"Redevance économie eau 4%",wtx:"Sous-total taxes et redevances",wbill:"Montant de la facture",wmiss:"Les prix des tranches 3 et 4 (au-delà de 55 m³) ne sont pas encore disponibles. Envoyez une facture correspondante sur GitHub.",sub:"Saisissez les index ancien et nouveau de l'électricité, du gaz ou des deux.",elec:"Électricité",gas:"Gaz",old:"Ancien index",new:"Nouvel index",calc:"Calculer la facture",
  errFill:"Veuillez remplir les quatre champs.",errOrder:"Le nouvel index doit être supérieur ou égal à l'ancien.",elecD:"Détail électricité",gasD:"Détail gaz",fees:"Redevances et taxes",
  use:"Consommation",diff:"Différence compteur",tr:"Tranche",ht0:"Montant HT",sub_:"Abonnement (redevances fixes)",ht:"Montant HT",t9:"TVA à 9%",t19:"TVA à 19%",
  tt:"Total TVA",fix:"Droit fixe sur consommation",hab:"Taxe d'habitation",net:"Net à payer TTC",stamp:"Timbre (paiement en espèces)",total:"Total à payer en espèces (timbre inclus) :",
@@ -102,16 +145,53 @@ function row(a,b,c){return'<tr class="'+(c||"")+'"><td>'+a+'</td><td><bdi dir="l
 function trs(rs){return rs.map(function(r){return row(t("tr")+" "+r.n+": "+q(r.q)+" × "+r.p,f(r.a)+" "+t("da"));}).join("");}
 function render(){
   if(!last)return;var c=last,da=" "+t("da");
-  document.getElementById("etab").innerHTML=row(t("use"),q(c.kwh)+" kWh","sum")+trs(c.er)+row(t("ht0"),f(c.ea)+da,"sum");
-  document.getElementById("gtab").innerHTML=row(t("diff"),q(c.m3)+" "+t("m3"))+row(t("use")+" ("+q(c.m3)+" × "+TF.gas.pcs+")",q(c.th)+" Th","sum")+trs(c.gr)+row(t("ht0"),f(c.ga)+da,"sum");
-  document.getElementById("ftab").innerHTML=row(t("sub_"),f(TF.subscription)+da)+row(t("ht"),f(c.ht)+da,"sum")+row(t("t9"),f(c.v9)+da)+row(t("t19"),f(c.v19)+da)+row(t("tt"),f(c.vt)+da,"sum")+row(t("fix"),f(c.fix)+da)+row(t("hab"),f(TF.housingTax)+da)+row(t("net"),f(c.net)+da,"sum")+row(t("stamp"),f(c.st)+da);
+  document.getElementById("ecard").classList.toggle("hidden",!c.hasE);
+  document.getElementById("gcard").classList.toggle("hidden",!c.hasG);
+  if(c.hasE)document.getElementById("etab").innerHTML=row(t("use"),q(c.kwh)+" kWh","sum")+trs(c.er)+row(t("ht0"),f(c.ea)+da,"sum");
+  if(c.hasG)document.getElementById("gtab").innerHTML=row(t("diff"),q(c.m3)+" "+t("m3"))+row(t("use")+" ("+q(c.m3)+" × "+TF.gas.pcs+")",q(c.th)+" Th","sum")+trs(c.gr)+row(t("ht0"),f(c.ga)+da,"sum");
+  document.getElementById("ftab").innerHTML=row(t("sub_"),f(c.sub)+da)+row(t("ht"),f(c.ht)+da,"sum")+row(t("t9"),f(c.v9)+da)+row(t("t19"),f(c.v19)+da)+row(t("tt"),f(c.vt)+da,"sum")+(c.fix>0?row(t("fix"),f(c.fix)+da):"")+(c.hab>0?row(t("hab"),f(c.hab)+da):"")+row(t("net"),f(c.net)+da,"sum")+row(t("stamp"),f(c.st)+da);
   document.getElementById("tot").textContent=f(c.total)+da;
 }
+
+var lastW=null,navigated=false;
+function trsW(rs){return rs.filter(function(r){return r.q>0}).map(function(r){return row(t("tr")+" "+r.n+": "+q(r.q)+" × "+r.p.toFixed(2),f(r.a)+" "+t("da"));}).join("");}
+function renderWater(){
+  var out=document.getElementById("wout");
+  document.getElementById("wsealnote").classList.toggle("hidden",document.getElementById("prov").value!=="seaal");
+  if(!lastW)return;
+  var c=lastW,da=" "+t("da"),W=TF.water;
+  document.getElementById("wtab").innerHTML=row(t("wfix"),f(W.fixedWater)+da)+trsW(c.wr)+row(t("wsub"),f(c.wsub)+da,"sum");
+  document.getElementById("stab").innerHTML=row(t("wfix"),f(W.fixedSanitation)+da)+trsW(c.sr)+row(t("wsub"),f(c.ssub)+da,"sum");
+  document.getElementById("wftab").innerHTML=row(t("wht"),f(c.ht)+da,"sum")+row(t("t9"),f(c.vat)+da)+row(t("wmg")+" ("+W.managementPerM3+" × "+q(c.m3)+")",f(c.mgmt)+da)+row(t("wql"),f(c.qual)+da)+row(t("wec"),f(c.eco)+da)+row(t("wtx"),f(c.taxes)+da,"sum")+row(t("wbill"),f(c.bill)+da,"sum")+row(t("stamp"),f(c.st)+da);
+  document.getElementById("wtot").textContent=f(c.total)+da;
+  document.getElementById("wwarn").textContent=c.estimated?t("westim"):"";
+  out.classList.remove("hidden");
+}
+document.getElementById("prov").addEventListener("change",function(){lastW=null;document.getElementById("wout").classList.add("hidden");document.getElementById("werr").textContent="";renderWater();});
+document.getElementById("wcalc").addEventListener("click",function(){
+  var a=parseFloat(document.getElementById("wo").value),b=parseFloat(document.getElementById("wn").value),err=document.getElementById("werr"),out=document.getElementById("wout");
+  err.textContent="";out.classList.add("hidden");lastW=null;
+  if(document.getElementById("prov").value==="seaal"){renderWater();return;}
+  if(isNaN(a)||isNaN(b)){err.textContent=t("errFillW");return;}
+  if(b<a){err.textContent=t("errOrder");return;}
+  lastW=DZCalc.computeWater(b-a);renderWater();out.scrollIntoView({behavior:"smooth",block:"start"});
+});
+function showView(){
+  var v=(location.hash||"").slice(1);if(v!=="eg"&&v!=="w")v="home";
+  document.getElementById("home").classList.toggle("hidden",v!=="home");
+  document.getElementById("p-eg").classList.toggle("hidden",v!=="eg");
+  document.getElementById("p-w").classList.toggle("hidden",v!=="w");
+  document.getElementById("back").classList.toggle("hidden",v==="home");
+  var s=document.getElementById("subline");s.dataset.i={home:"homeSub",eg:"sub",w:"subW"}[v];s.textContent=t(s.dataset.i);
+}
+window.addEventListener("hashchange",showView);
+document.querySelectorAll("[data-go]").forEach(function(b){b.addEventListener("click",function(){navigated=true;location.hash=b.dataset.go;});});
+document.getElementById("back").addEventListener("click",function(){if(navigated&&history.length>1)history.back();else location.hash="";});
 function applyLang(){
   var h=document.documentElement;h.lang=lang;h.dir=lang==="ar"?"rtl":"ltr";
   document.querySelectorAll("[data-i]").forEach(function(e){e.textContent=t(e.dataset.i)});
   document.querySelectorAll("#langs button").forEach(function(b){b.classList.toggle("on",b.dataset.l===lang)});
-  applyTheme();render();
+  applyTheme();render();renderWater();showView();
 }
 function applyTheme(){
   var dark=mode==="dark"||(mode==="auto"&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);
@@ -122,11 +202,14 @@ document.getElementById("langs").addEventListener("click",function(e){var l=e.ta
 document.getElementById("theme").addEventListener("click",function(){mode={auto:"light",light:"dark",dark:"auto"}[mode];store("theme",mode);applyTheme();});
 if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",applyTheme);
 document.getElementById("calc").addEventListener("click",function(){
-  var v=function(i){return parseFloat(document.getElementById(i).value)},a=[v("eo"),v("en"),v("go"),v("gn")],err=document.getElementById("err"),out=document.getElementById("out");
+  var v=function(i){return parseFloat(document.getElementById(i).value)},eo=v("eo"),en=v("en"),go=v("go"),gn=v("gn"),err=document.getElementById("err"),out=document.getElementById("out");
   err.textContent="";out.classList.add("hidden");
-  if(a.some(isNaN)){err.textContent=t("errFill");return;}
-  if(a[1]<a[0]||a[3]<a[2]){err.textContent=t("errOrder");return;}
-  last=compute(a[0],a[1],a[2],a[3]);render();out.classList.remove("hidden");out.scrollIntoView({behavior:"smooth",block:"start"});
+  var e=[eo,en].filter(isNaN).length,g=[go,gn].filter(isNaN).length;
+  if(e===1||g===1){err.textContent=t("errPair");return;}
+  if(e===2&&g===2){err.textContent=t("errNeed");return;}
+  if((!e&&en<eo)||(!g&&gn<go)){err.textContent=t("errOrder");return;}
+  last=compute(e?null:eo,e?null:en,g?null:go,g?null:gn,parseFloat(document.getElementById("pmd").value));
+  render();out.classList.remove("hidden");out.scrollIntoView({behavior:"smooth",block:"start"});
 });
 (function(){var l=load("lang"),m=load("theme");
   if(!l){var n=(navigator.language||"ar").slice(0,2);l=T[n]?n:"ar";}
