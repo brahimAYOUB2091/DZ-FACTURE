@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>DZ فاتورة</title>
+<style>
+:root{--blue:#0b4f8a;--orange:#e07b0c;--bg:#f3f5f8;--card:#fff;--text:#1d2733;--muted:#5d6975;--line:#dde3ea;--hero:#0b4f8a;--herotext:#fff;--err:#c0392b}
+:root[data-theme="dark"]{--blue:#6fb0ee;--orange:#f5a146;--bg:#10151b;--card:#19212a;--text:#e8edf2;--muted:#9aa6b2;--line:#2b3641;--hero:#0d3558;--err:#ff7b6b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Segoe UI",Tahoma,"Noto Naskh Arabic",Arial,sans-serif;line-height:1.6;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.wrap{max-width:560px;margin:0 auto;padding:12px 16px 24px}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+h1{font-size:1.35rem;margin:0;color:var(--blue)}
+.tools{display:flex;gap:6px;align-items:center}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button,.theme{background:var(--card);color:var(--text);border:0;padding:8px 10px;font-size:.85rem;cursor:pointer;min-width:40px}
+.seg button.on{background:var(--blue);color:var(--bg);font-weight:700}
+.theme{border:1px solid var(--line);border-radius:10px;font-size:1rem}
+.sub{color:var(--muted);margin:0 0 14px;font-size:.9rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.card h2{margin:0 0 12px;font-size:1.05rem}
+.elec{border-top:4px solid var(--orange)}.gas{border-top:4px solid var(--blue)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:4px}
+input{width:100%;padding:12px;font-size:1.05rem;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);direction:ltr;text-align:start}
+:focus-visible{outline:3px solid var(--orange);outline-offset:1px}
+.go{width:100%;padding:14px;font-size:1.1rem;font-weight:700;border:0;border-radius:12px;background:var(--orange);color:#1d1203;cursor:pointer}
+.err{color:var(--err);margin:8px 0 0;min-height:1.4em;font-size:.9rem}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+td{padding:6px 0;border-bottom:1px dashed var(--line)}
+td:last-child{text-align:end;white-space:nowrap}
+tr.sum td{font-weight:700;border-bottom:1px solid var(--line)}
+.total{background:var(--hero);color:var(--herotext);border-radius:14px;padding:16px;text-align:center}
+.total b{display:block;font-size:1.8rem;margin-top:4px;direction:ltr}
+.hidden{display:none}
+.note{color:var(--muted);font-size:.8rem;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <h1>DZ فاتورة</h1>
+    <div class="tools">
+      <div class="seg" id="langs"><button data-l="ar">ع</button><button data-l="en">EN</button><button data-l="fr">FR</button></div>
+      <button class="theme" id="theme" type="button"></button>
+    </div>
+  </div>
+  <p class="sub" data-i="sub"></p>
+
+  <!-- لإضافة الماء لاحقاً: أضف بطاقة جديدة هنا + دالة حساب + مفاتيح الترجمة في T -->
+  <div class="card elec"><h2 data-i="elec"></h2><div class="row">
+    <div><label for="eo" data-i="old"></label><input id="eo" type="number" inputmode="decimal" min="0" step="any"></div>
+    <div><label for="en" data-i="new"></label><input id="en" type="number" inputmode="decimal" min="0" step="any"></div>
+  </div></div>
+  <div class="card gas"><h2 data-i="gas"></h2><div class="row">
+    <div><label for="go" data-i="old"></label><input id="go" type="number" inputmode="decimal" min="0" step="any"></div>
+    <div><label for="gn" data-i="new"></label><input id="gn" type="number" inputmode="decimal" min="0" step="any"></div>
+  </div></div>
+
+  <button class="go" id="calc" type="button" data-i="calc"></button>
+  <p class="err" id="err" role="alert"></p>
+
+  <div id="out" class="hidden">
+    <div class="card elec"><h2 data-i="elecD"></h2><table id="etab"></table></div>
+    <div class="card gas"><h2 data-i="gasD"></h2><table id="gtab"></table></div>
+    <div class="card"><h2 data-i="fees"></h2><table id="ftab"></table></div>
+    <div class="total"><span data-i="total"></span><b id="tot"></b></div>
+    <p class="note" data-i="note"></p>
+  </div>
+</div>
+
+<script src="tariffs.js"></script>
+<script src="calc.js"></script>
+<script>
+var T={
+ar:{sub:"أدخل البيان القديم والجديد للعدادين لحساب الفاتورة.",elec:"الكهرباء",gas:"الغاز",old:"البيان القديم",new:"البيان الجديد",calc:"احسب الفاتورة",
+ errFill:"الرجاء إدخال الحقول الأربعة.",errOrder:"البيان الجديد يجب أن يكون أكبر من أو يساوي القديم.",elecD:"تفاصيل الكهرباء",gasD:"تفاصيل الغاز",fees:"الرسوم والضرائب",
+ use:"الاستهلاك",diff:"الفرق في العداد",tr:"الشطر",ht0:"المبلغ دون رسوم",sub_:"الاشتراك (الاتاوات الثابتة)",ht:"المبلغ دون رسوم (HT)",t9:"الرسم على القيمة المضافة 9%",t19:"الرسم على القيمة المضافة 19%",
+ tt:"مجموع TVA",fix:"المستحقات الثابتة على الاستهلاك",hab:"رسم على السكن",net:"الصافي للدفع (شامل الرسوم)",stamp:"الطابع (دفع نقدا)",total:"المبلغ الإجمالي للدفع نقداً (شامل الطابع):",
+ note:"الحساب تقريبي وقد يختلف عن الفاتورة الرسمية بسنتيم واحد بسبب التقريب.",da:"دج",m3:"م³",th:"Th",auto:"تلقائي",light:"فاتح",dark:"داكن"},
+en:{sub:"Enter the old and new readings of both meters to compute the bill.",elec:"Electricity",gas:"Gas",old:"Old reading",new:"New reading",calc:"Calculate bill",
+ errFill:"Please fill in all four fields.",errOrder:"The new reading must be greater than or equal to the old one.",elecD:"Electricity details",gasD:"Gas details",fees:"Fees and taxes",
+ use:"Consumption",diff:"Meter difference",tr:"Tier",ht0:"Amount before tax",sub_:"Subscription (fixed charges)",ht:"Amount before tax (HT)",t9:"VAT 9%",t19:"VAT 19%",
+ tt:"Total VAT",fix:"Fixed consumption charge",hab:"Housing tax",net:"Net payable (all taxes included)",stamp:"Stamp duty (cash)",total:"Total to pay in cash (stamp included):",
+ note:"Approximate: may differ from the official bill by one centime due to rounding.",da:"DA",m3:"m³",th:"Th",auto:"Auto",light:"Light",dark:"Dark"},
+fr:{sub:"Saisissez l'ancien et le nouvel index des deux compteurs pour calculer la facture.",elec:"Électricité",gas:"Gaz",old:"Ancien index",new:"Nouvel index",calc:"Calculer la facture",
+ errFill:"Veuillez remplir les quatre champs.",errOrder:"Le nouvel index doit être supérieur ou égal à l'ancien.",elecD:"Détail électricité",gasD:"Détail gaz",fees:"Redevances et taxes",
+ use:"Consommation",diff:"Différence compteur",tr:"Tranche",ht0:"Montant HT",sub_:"Abonnement (redevances fixes)",ht:"Montant HT",t9:"TVA à 9%",t19:"TVA à 19%",
+ tt:"Total TVA",fix:"Droit fixe sur consommation",hab:"Taxe d'habitation",net:"Net à payer TTC",stamp:"Timbre (paiement en espèces)",total:"Total à payer en espèces (timbre inclus) :",
+ note:"Calcul approximatif : peut différer de la facture officielle d'un centime (arrondis).",da:"DA",m3:"m³",th:"Th",auto:"Auto",light:"Clair",dark:"Sombre"}
+};
+var TF=window.TARIFFS,compute=DZCalc.compute;
+var lang="ar",mode="auto",last=null;
+function store(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function load(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function t(k){return T[lang][k];}
+function f(x){return x.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}).replace(/,/g,"\u00A0");}
+function q(x){return x.toLocaleString("en-US",{maximumFractionDigits:2}).replace(/,/g,"\u00A0");}
+function row(a,b,c){return'<tr class="'+(c||"")+'"><td>'+a+'</td><td><bdi dir="ltr">'+b+'</bdi></td></tr>';}
+function trs(rs){return rs.map(function(r){return row(t("tr")+" "+r.n+": "+q(r.q)+" × "+r.p,f(r.a)+" "+t("da"));}).join("");}
+function render(){
+  if(!last)return;var c=last,da=" "+t("da");
+  document.getElementById("etab").innerHTML=row(t("use"),q(c.kwh)+" kWh","sum")+trs(c.er)+row(t("ht0"),f(c.ea)+da,"sum");
+  document.getElementById("gtab").innerHTML=row(t("diff"),q(c.m3)+" "+t("m3"))+row(t("use")+" ("+q(c.m3)+" × "+TF.gas.pcs+")",q(c.th)+" Th","sum")+trs(c.gr)+row(t("ht0"),f(c.ga)+da,"sum");
+  document.getElementById("ftab").innerHTML=row(t("sub_"),f(TF.subscription)+da)+row(t("ht"),f(c.ht)+da,"sum")+row(t("t9"),f(c.v9)+da)+row(t("t19"),f(c.v19)+da)+row(t("tt"),f(c.vt)+da,"sum")+row(t("fix"),f(c.fix)+da)+row(t("hab"),f(TF.housingTax)+da)+row(t("net"),f(c.net)+da,"sum")+row(t("stamp"),f(c.st)+da);
+  document.getElementById("tot").textContent=f(c.total)+da;
+}
+function applyLang(){
+  var h=document.documentElement;h.lang=lang;h.dir=lang==="ar"?"rtl":"ltr";
+  document.querySelectorAll("[data-i]").forEach(function(e){e.textContent=t(e.dataset.i)});
+  document.querySelectorAll("#langs button").forEach(function(b){b.classList.toggle("on",b.dataset.l===lang)});
+  applyTheme();render();
+}
+function applyTheme(){
+  var dark=mode==="dark"||(mode==="auto"&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);
+  document.documentElement.dataset.theme=dark?"dark":"light";
+  var b=document.getElementById("theme");b.textContent={auto:"◐",light:"☀",dark:"☾"}[mode];b.title=b.ariaLabel=t(mode);
+}
+document.getElementById("langs").addEventListener("click",function(e){var l=e.target.dataset.l;if(l){lang=l;store("lang",l);applyLang();}});
+document.getElementById("theme").addEventListener("click",function(){mode={auto:"light",light:"dark",dark:"auto"}[mode];store("theme",mode);applyTheme();});
+if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",applyTheme);
+document.getElementById("calc").addEventListener("click",function(){
+  var v=function(i){return parseFloat(document.getElementById(i).value)},a=[v("eo"),v("en"),v("go"),v("gn")],err=document.getElementById("err"),out=document.getElementById("out");
+  err.textContent="";out.classList.add("hidden");
+  if(a.some(isNaN)){err.textContent=t("errFill");return;}
+  if(a[1]<a[0]||a[3]<a[2]){err.textContent=t("errOrder");return;}
+  last=compute(a[0],a[1],a[2],a[3]);render();out.classList.remove("hidden");out.scrollIntoView({behavior:"smooth",block:"start"});
+});
+(function(){var l=load("lang"),m=load("theme");
+  if(!l){var n=(navigator.language||"ar").slice(0,2);l=T[n]?n:"ar";}
+  lang=T[l]?l:"ar";if(m==="light"||m==="dark"||m==="auto")mode=m;applyLang();})();
+</script>
+</body>
+</html>

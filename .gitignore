@@ -1,0 +1,21 @@
+# Dependencies / build output
+node_modules/
+# android/ يُولَّد بالأمر: bash setup.sh
+android/
+dist/
+build/
+.gradle/
+*.apk
+*.aab
+
+# Signing keys & secrets — NEVER commit / لا ترفع مفاتيح التوقيع أبداً
+*.jks
+*.keystore
+keystore.properties
+local.properties
+.env
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
