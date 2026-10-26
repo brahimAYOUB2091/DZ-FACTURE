@@ -6,7 +6,7 @@
 
 ## العربية
 
-حاسبة مفتوحة المصدر تقدّر فاتورة **الكهرباء والغاز** (من بيان العدادين القديم والجديد) وفاتورة **الماء** (من بيان العداد القديم والجديد) في الجزائر. تعمل دون إنترنت، وتفتح بشاشة اختيار (الكهرباء والغاز / الماء)، وتدعم العربية والإنجليزية والفرنسية، والوضعين الفاتح والداكن.
+حاسبة مفتوحة المصدر تقدّر فاتورة **الكهرباء والغاز** (من بيان العدادين القديم والجديد) وفاتورة **الماء** (من بيان العداد القديم والجديد) في الجزائر. تعمل دون إنترنت، وتفتح بلوحة تحكم (رسوم بيانية وسجل محلي للحسابات على الجهاز)، وتدعم العربية والإنجليزية والفرنسية، والوضعين الفاتح والداكن.
 
 > ⚠️ **تنبيه:** هذا مشروع مستقل **غير تابع لسونلغاز** ولا لأي جهة رسمية. النتيجة تقريبية وقد تختلف عن الفاتورة الرسمية بسنتيم واحد أو أكثر. الفاتورة الرسمية هي المرجع.
 
@@ -25,6 +25,9 @@ npm test      # يتطلب Node.js 20 أو أحدث
 bash setup.sh          # ينشئ مشروع أندرويد ويولّد الأيقونات ويضبط API 36
 npx cap open android   # ثم Build > Generate Signed Bundle
 ```
+
+### تجربة سريعة على الهاتف (بدون Android Studio)
+من Kali على الهاتف: `bash tools/apk-test/build.sh` يبني APK تجريبياً من مجلد `www`. التفاصيل في [tools/apk-test/README.md](tools/apk-test/README.md).
 
 ### هيكل المشروع
 | المسار | الوظيفة |
@@ -58,7 +61,7 @@ MIT — انظر [LICENSE](LICENSE).
 
 ## English
 
-Open-source calculator that estimates an Algerian **electricity and gas** bill (from old/new meter readings) and **water** bill (from old/new meter readings). Works offline; Arabic, English, French; light and dark themes.
+Open-source calculator that estimates an Algerian **electricity and gas** bill (from old/new meter readings) and **water** bill (from old/new meter readings). Works offline; opens on a dashboard (charts + local history kept on the device only); Arabic, English, French; light and dark themes.
 
 > ⚠️ **Disclaimer:** independent project, **not affiliated with Sonelgaz** or any authority. Results are estimates and may differ from the official bill (at least by rounding). The official bill is authoritative.
 
